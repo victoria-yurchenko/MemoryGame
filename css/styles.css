@@ -1,0 +1,19 @@
+.cell {
+    
+    width: 200px;
+    height: 200px;
+    background-color: beige;
+    padding: 20px;
+    border: 1px solid lightgray;
+    overflow: hidden;
+}
+
+.cell-container {
+
+    display: flex;
+}
+
+.cell-container-container {
+
+    margin: 20px;
+}
