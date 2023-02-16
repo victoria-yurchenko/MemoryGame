@@ -20,71 +20,86 @@ $(function () {
     ];
 
     let cover = './images/paw.png';
-    let lastClickedImage = '';      // the path here
+    let lastOpenedImage = '';      // the path here
     let isGameStarted = false;
     let isGameOver = false;
     let openedImages = 0;           // the counter of opened images
+    let index = 0;
+    const countCells = 4;           // field 4x4
+
 
     function shuffle(array) {
         array.sort(() => Math.random() - 0.5);
     }
 
+    function buttonDialog() {
+
+    }
+
     shuffle(images);
 
-    $('div.cell').each(function () {
-        $(this).append('<img src="' + cover + '" />');
-    });
 
-    for (let i = 0; i < $('div.cell').length; i++) {
+    for (let i = 0; i < countCells; i++) {
+        for (let j = 0; j < countCells; j++) {
 
-        $($('div.cell')[i]).on({
-            mouseenter: function () {
-                $($(this)).empty();
-                $($(this)).append('<img src="' + images[i] + '" width="200px" height="200px" />');
-            },
-            mouseleave: function () {
-                $($(this)).empty();
-                $($(this)).append('<img src="' + cover + '" width="200px" height="200px" />');
-            },
-            click: function () {
+            let div = $('<div class="cell"></div>');
 
-                if (!isGameStarted) {
-                    for (let j = 0; j < $('div.cell').length; j++) {
+            div.append('<img src="' + cover + '" class="imgOuter" />');
+            div.append('<img src="' + images[index++] + '" class="imgInner" />');
 
-                        $($('div.cell')[j]).empty();
-                        $($('div.cell')[j]).append('<img src="' + cover + '" width="200px" height="200px" />');
-                    }
+            div.on({
+                mouseenter: function () {
+                    $($(this)).children().eq(0).css({
+                        display: "none"
+                    })
+                },
+                mouseleave: function () {
+                    $($(this)).children().eq(0).css({
+                        display: "block"
+                    })
+                },
+                click: function () {
+
+                    // hiding the last opened image
+                    $(this).mouseleave();
 
                     $($('div.cell')).off('mouseenter');
                     $($('div.cell')).off('mouseleave');
+                    $($('div.cell')).off('click');
 
-                    isGameStarted = true;
+                    $($('div.cell')).on({
+                        click: function () {
 
-                    return;
+                            $($(this)).children().eq(0).css({
+                                display: "none"
+                            });
+
+                            if (openedImages % 2 == 0 && openedImages != 0)
+                                lastOpenedImage = '';
+
+                            if (lastOpenedImage == '')
+                                lastOpenedImage = $($(this)).children().eq(1).attr("src");
+
+                            if (lastOpenedImage == $($(this)).children().eq(1).attr("src"))
+                                openedImages++;
+                            else {
+                                $($('div.cell')).off('click');
+
+                                buttonDialog
+                            }
+                                
+
+                            if(openedImages == countCells * countCells)
+                                //winner here;
+                                ;
+                            
+                        }
+                    })
+
                 }
+            })
 
-                console.log('clicked');
-
-                $($(this)).empty();
-                $($(this)).append('<img src="' + images[i] + '" width="200px" height="200px" />')
-
-                if (lastClickedImage == '') {
-                    openedImages++;
-                    lastClickedImage = images[i];
-                }
-                else if (lastClickedImage == images[i]) {
-                    openedImages++;
-
-                }
-
-                if(openedImages == 16){
-                    //winner
-                }
-
-            }
-        });
+            $($('div.cell-container')[i]).append(div);
+        }
     }
-
-
-
 });
