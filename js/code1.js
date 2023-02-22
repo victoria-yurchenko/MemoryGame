@@ -20,11 +20,8 @@ $(function () {
     ];
 
     let cover = './images/paw.png';
-    let lastOpenedImage = '';      // the path here
-    let isGameStarted = false;
-    let isGameOver = false;
+    let lastOpenedImage = '';       // the path here
     let openedImages = 0;           // the counter of opened images
-    let index = 0;
     const countCells = 4;           // field 4x4
 
 
@@ -32,74 +29,105 @@ $(function () {
         array.sort(() => Math.random() - 0.5);
     }
 
-    function buttonDialog() {
+    $('#btnNewGame').on({
+        click: createField
+    });
 
-    }
+    createField();
 
-    shuffle(images);
+    function createField() {
 
+        openedImages = 0;
+        lastOpenedImage = '';
+        $('#winnerText').html('');
 
-    for (let i = 0; i < countCells; i++) {
-        for (let j = 0; j < countCells; j++) {
+        for (let i = 0; i < countCells; i++)
+            $($('div.cell-container')[i]).empty();
 
-            let div = $('<div class="cell"></div>');
+        $('#btnNewGame').css({
+            display: 'none'
+        });
 
-            div.append('<img src="' + cover + '" class="imgOuter" />');
-            div.append('<img src="' + images[index++] + '" class="imgInner" />');
+        let index = 0;
+        shuffle(images);
 
-            div.on({
-                mouseenter: function () {
-                    $($(this)).children().eq(0).css({
-                        display: "none"
-                    })
-                },
-                mouseleave: function () {
-                    $($(this)).children().eq(0).css({
-                        display: "block"
-                    })
-                },
-                click: function () {
+        for (let i = 0; i < countCells; i++) {
+            for (let j = 0; j < countCells; j++) {
 
-                    // hiding the last opened image
-                    $(this).mouseleave();
+                let div = $('<div class="cell"></div>');
 
-                    $($('div.cell')).off('mouseenter');
-                    $($('div.cell')).off('mouseleave');
-                    $($('div.cell')).off('click');
+                div.append('<img src="' + cover + '" class="imgOuter" />');
+                div.append('<img src="' + images[index++] + '" class="imgInner" />');
 
-                    $($('div.cell')).on({
-                        click: function () {
+                div.on({
+                    mouseenter: function () {
+                        $($(this)).children().eq(0).css({
+                            display: "none"
+                        })
+                    },
+                    mouseleave: function () {
+                        $($(this)).children().eq(0).css({
+                            display: "block"
+                        })
+                    },
+                    click: function () {
 
-                            $($(this)).children().eq(0).css({
-                                display: "none"
-                            });
+                        // hiding the last opened image
+                        $(this).mouseleave();
 
-                            if (openedImages % 2 == 0 && openedImages != 0)
-                                lastOpenedImage = '';
+                        $($('div.cell')).off('mouseenter');
+                        $($('div.cell')).off('mouseleave');
+                        $($('div.cell')).off('click');
 
-                            if (lastOpenedImage == '')
-                                lastOpenedImage = $($(this)).children().eq(1).attr("src");
-
-                            if (lastOpenedImage == $($(this)).children().eq(1).attr("src"))
-                                openedImages++;
-                            else {
-                                $($('div.cell')).off('click');
-
-                                buttonDialog
-                            }
+                        $($('div.cell')).on({
+                            click: function () {
                                 
+                                if ($($(this)).children().eq(0).css('display') == 'block' ||
+                                    $($(this)).children().eq(0).css('display') == 'inline') {
+                                    $($(this)).children().eq(0).css({
+                                        display: "none"
+                                    });
 
-                            if(openedImages == countCells * countCells)
-                                //winner here;
-                                ;
-                            
-                        }
-                    })
+                                    if (openedImages % 2 == 0 && openedImages != 0)
+                                        lastOpenedImage = '';
 
-                }
-            })
+                                    if (lastOpenedImage == '')
+                                        lastOpenedImage = $($(this)).children().eq(1).attr("src");
 
-            $($('div.cell-container')[i]).append(div);
+                                    if (lastOpenedImage == $($(this)).children().eq(1).attr("src"))
+                                        openedImages++;
+                                    else {
+                                        $($('div.cell')).off('click');
+                                        $('#winnerText').html('You lose!');
+                                        $('#btnNewGame').css({
+                                            display: 'block'
+                                        })
+                                    }
+
+                                    if (openedImages == countCells * countCells) {
+                                        $('#winnerText').html('You win!');
+                                        $('#btnNewGame').css({
+                                            display: 'block'
+                                        })
+                                    }
+                                }
+
+
+                            }
+                        })
+
+                    }
+                })
+
+                $($('div.cell-container')[i]).append(div);
+            }
         }
     }
+
+
+
+
+
+
+
 });
